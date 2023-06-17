@@ -1,19 +1,39 @@
+currentBuild.displayName = "web-app-build-#" + currentBuild.number
+
 properties([parameters([choice(choices: ['dev', 'stage', 'prod'], name: 'environment')]), [$class: 'JobLocalConfiguration', changeReasonComment: '']])
 
 node('ubuntu'){
   stage ('Clone Git') {
     git 'https://github.com/monthebrice2000/jenkins-ci-cd-workflow.git'
   }
+
   stage ('Maven build') {
     // build 'clean-app-maven'
-    
     dir("./jenkins-web-app-pipeline") {
       sh 'mvn package'
     }
   }
 
+  stage('SonarQube Analysis') {
+    //def mvnHome =  tool name: 'maven-3', type: 'maven'
+    withSonarQubeEnv('sonarqube-scanner') { 
+      dir("./jenkins-web-app-pipeline") {
+        sh "mvn sonar:sonar"
+      }
+    }
+  }
+
+  stage('Quality Code Status check') {
+    timeout (time: 10, unit: 'SECONDS') {
+      def qg = waitForQualityGate()
+      if (qg.status != 'OK') {
+        slackSend channel: 'dev', color: 'danger', message: 'SonarQube Analysis Check Status', teamDomain: 'tontonlaforce', tokenCredentialId: 'slack-tocken'
+        error "Pipeline aborted due to quality get failure: ${qg.status}"
+      }
+    }
+  }
+
   stage ('Email Alerts') {
-    sh 'pwd'
     mail bcc: '', body: '''Hello, Welcome to jenkins email alerts Thanks,''', cc: '', from: '', replyTo: '', subject: 'Hello World', to: 'brice@gmail.com'
   }
   
@@ -46,4 +66,13 @@ node('ubuntu'){
 //         junit '**/target/surefire-reports/TEST-*.xml'
 //         archiveArtifacts 'target/*.jar'
 //     }
+// }
+
+// environment{
+//   DOCKER_TAG="eeeeeeee"
+// }
+
+// def getDockerTag(){
+//   def tag = sh script: "xxxxxx", returnStdout: true
+//   return tag
 // }
