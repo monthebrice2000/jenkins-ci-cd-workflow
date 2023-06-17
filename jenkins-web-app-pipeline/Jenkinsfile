@@ -1,3 +1,5 @@
+properties([parameters([choice(choices: ['dev', 'stage', 'prod'], name: 'environment')]), [$class: 'JobLocalConfiguration', changeReasonComment: '']])
+
 node('ubuntu'){
   stage ('Clone Git') {
     git 'https://github.com/monthebrice2000/jenkins-ci-cd-workflow.git'
@@ -8,6 +10,15 @@ node('ubuntu'){
     dir("./jenkins-web-app-pipeline") {
       sh 'mvn package'
     }
+  }
+
+  stage ('Email Alerts') {
+    sh 'pwd'
+    mail bcc: '', body: '''Hello, Welcome to jenkins email alerts Thanks,''', cc: '', from: '', replyTo: '', subject: 'Hello World', to: 'brice@gmail.com'
+  }
+  
+  stage ('Slack Notifications') {
+    slackSend channel: 'dev', color: 'good', message: 'Hello To Jenkins alerts', teamDomain: 'tontonlaforce', tokenCredentialId: 'slack-tocken'
   }
 }
 
