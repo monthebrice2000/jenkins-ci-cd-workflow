@@ -1,0 +1,9 @@
+node('ubuntu'){
+  stage{
+    git 'https://github.com/monthebrice2000/jenkins-ci-cd-workflow.git'
+    sh 'cd ./jenkins-web-app-pipeline'
+  }
+  stage{
+    sh 'mvn package'
+  }
+}
