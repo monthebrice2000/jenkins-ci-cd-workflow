@@ -33,12 +33,35 @@ node('ubuntu'){
     }
   }
 
+  stage("Docker Build"){
+    dir("./jenkins-web-app-pipeline") {
+      sh "sudo docker build -t tontonlaforce/hariapp:${env.BUILD_NUMBER} ."
+    }    
+  }
+
+  stage("DockerHub Push") {
+    dir("./jenkins-web-app-pipeline") {
+      withCredentials([usernamePassword(credentialsId: 'tontonlaforce', passwordVariable: 'pwd', usernameVariable: 'user')]) {
+          sh "sudo docker login -u ${user} -p ${pwd}"
+          sh "sudo docker push tontonlaforce/hariapp:${env.BUILD_NUMBER}"
+      }
+    }
+  }
+
+  stage("Docker Deploy Dev to AWS"){
+    sh 'echo Deploy app to AWS'
+    // sshagent(['docker-dev-ssh']) {
+    //   sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.8.229 docker rm -f hariapp"
+    //   sh "ssh ec2-user@172.31.8.229 docker run -d -p 8080:8080 --name hariapp kammana/hariapp:${env.BUILD_NUMBER}"
+    // }
+  }
+
   stage ('Email Alerts') {
-    mail bcc: '', body: '''Hello, Welcome to jenkins email alerts Thanks,''', cc: '', from: '', replyTo: '', subject: 'Hello World', to: 'brice@gmail.com'
+    mail bcc: '', body: "Hello, Welcome to jenkins email alerts, Deploy gone well ${currentBuild.displayName} Thanks," , cc: '', from: '', replyTo: '', subject: 'Hello World', to: 'brice@gmail.com'
   }
   
   stage ('Slack Notifications') {
-    slackSend channel: 'dev', color: 'good', message: 'Hello To Jenkins alerts', teamDomain: 'tontonlaforce', tokenCredentialId: 'slack-tocken'
+    slackSend channel: 'dev', color: 'good', message: "Hello, Welcome to jenkins email alerts, Deploy gone well ${currentBuild.displayName} Thanks,", teamDomain: 'tontonlaforce', tokenCredentialId: 'slack-tocken'
   }
 }
 
