@@ -1,11 +1,12 @@
 pipeline {
   agent any
   stages {
-    stage('change directory') {
+    stage('Client tests') {
       steps {
-        sh 'cd ./mern-app-jenkins'
-        dir(path: './mern-app-jenkins') {
+        dir(path: './mern-app-jenkins/client') {
           sh 'echo "$(pwd)"'
+          sh 'npm install'
+          sh 'npm run test'
         }
 
       }
