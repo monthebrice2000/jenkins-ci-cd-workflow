@@ -4,7 +4,10 @@ pipeline {
     stage('change directory') {
       steps {
         sh 'cd ./mern-app-jenkins'
-        sh 'echo "$(pwd)"'
+        dir(path: './mern-app-jenkins') {
+          sh 'echo "$(pwd)"'
+        }
+
       }
     }
 
