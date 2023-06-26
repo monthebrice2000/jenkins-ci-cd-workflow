@@ -41,10 +41,7 @@ obj/
 .nfs*
 
 sample*
-docker-compose.yml
-jenkins-docker.PNG
-build-system-jenkins/
-jenkins-2/
-jenkins-3/
-build-system-jenkins/
+.github/
+*.jpg
+*.png
 # End of https://www.toptal.com/developers/gitignore/api/dotnetcore,git,linux
