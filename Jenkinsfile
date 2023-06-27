@@ -43,11 +43,12 @@ pipeline {
 
     stage('Push Images to DockerHub') {
       steps {
-        withCredentials([usernamePassword(credentialsId: 'docker_credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-            sh 'docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD'
-            sh 'docker push tontonlaforce/productivity-app:client-latest'
-            sh 'docker push tontonlaforce/productivity-app:server-latest'
+        withCredentials(bindings: [usernamePassword(credentialsId: 'docker_credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+          sh 'docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD'
+          sh 'docker push tontonlaforce/productivity-app:client-latest'
+          sh 'docker push tontonlaforce/productivity-app:server-latest'
         }
+
       }
     }
 
