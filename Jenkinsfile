@@ -28,6 +28,16 @@ pipeline {
       }
     }
 
+    stage('Build Image') {
+      steps {
+        dir(path: './mern-app-jenkins/client') {
+          sh 'sudo docker build -t tontonlaforce/productivity-app:client-latest .'
+          sh 'sudo docker build -t tontonlaforce/productivity-app:server-latest .'
+        }
+
+      }
+    }
+
   }
   environment {
     MONGODB_URI = credentials('mongodb_uri')
