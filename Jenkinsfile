@@ -31,11 +31,11 @@ pipeline {
     stage('Build Image') {
       steps {
         dir(path: './mern-app-jenkins/client') {
-          sh 'docker build -t tontonlaforce/productivity-app:latest client'
+          sh 'docker build -t tontonlaforce/productivity-app:latest .'
         }
 
         dir(path: './mern-app-jenkins/server') {
-          sh 'docker build -t tontonlaforce/productivity-app:latest server'
+          sh 'docker build -t tontonlaforce/productivity-app:latest .'
         }
 
       }
